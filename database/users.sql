@@ -1,4 +1,4 @@
-CREATE TABLE `u_settings` ( `name` VARCHAR(255) NOT NULL , `value` VARCHAR(255) NOT NULL ) ENGINE = InnoDB;
+CREATE TABLE `u_settings` ( `id` INT(11) NOT NULL AUTO_INCREMENT ,`name` VARCHAR(255) NOT NULL , `value` VARCHAR(255) NOT NULL, PRIMARY KEY (`id`) ) ENGINE = InnoDB;
 INSERT INTO `u_settings` (`name`, `value`) VALUES ('api_url', 'users-show');
 INSERT INTO `u_settings` (`name`, `value`) VALUES ('AccessToken', 'gmkj^Ynv-chrynnctser55vfynckd4jf_kvj22');
 CREATE TABLE `u_users` (

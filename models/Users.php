@@ -26,9 +26,11 @@ require_once('models/EntityFactory.php');
                         $errors['errors'][] = 'error_email';
                     }
 
-                    $query = "SELECT count(*) as count as count FROM u_users WHERE `email`='$user->email'";
+                    $query = "SELECT count(*) as count FROM u_users WHERE `email`='$user->email'";
 
-                    $user_exists = $this->db->query($query);
+                    foreach ($this->db->query($query) as $res){
+                        $user_exists['count'] = $res['count'];
+                    }
                     if($user_exists['count']) {
                         $errors['errors'][] = 'error_user_exists_email';
                     }
@@ -37,9 +39,10 @@ require_once('models/EntityFactory.php');
 
                 if (!empty($_POST['login'])) {
                     $user->login = trim($_POST['login']);
-                    $query = "SELECT count(*) as count as count FROM u_users WHERE `login`= '$user->login'";
-
-                    $user_exists = $this->db->query($query);
+                    $query = "SELECT count(*) as count FROM u_users WHERE `login`= '$user->login'";
+                    foreach ($this->db->query($query) as $res){
+                        $user_exists['count'] = $res['count'];
+                    }
 
                     if($user_exists['count']) {
                         $errors['errors'][] = 'error_user_exists_login';
@@ -112,9 +115,11 @@ require_once('models/EntityFactory.php');
                         $errors[] = 'error_email';
                     }
 
-                    $query = "SELECT count(*) as count as count FROM u_users WHERE `email`='$user_update->email' AND `id`!='$id'";
+                    $query = "SELECT count(*) as count FROM u_users WHERE `email`='$user_update->email' AND `id`!='$id'";
 
-                    $user_exists = $this->db->query($query);
+                    foreach ($this->db->query($query) as $res){
+                        $user_exists['count'] = $res['count'];
+                    }
                     if($user_exists['count']) {
                         $errors[] = 'error_user_exists_email';
                     }
@@ -123,9 +128,11 @@ require_once('models/EntityFactory.php');
 
                 if (!empty($_POST['login'])) {
                     $user_update->login = trim($_POST['login']);
-                    $query = "SELECT count(*) as count as count FROM u_users WHERE `login`= '$user_update->login' AND `id`!='$id'";
+                    $query = "SELECT count(*) as count FROM u_users WHERE `login`= '$user_update->login' AND `id`!='$id'";
 
-                    $user_exists = $this->db->query($query);
+                    foreach ($this->db->query($query) as $res){
+                        $user_exists['count'] = $res['count'];
+                    }
 
                     if($user_exists['count']) {
                         $errors[] = 'error_user_exists_login';
@@ -146,18 +153,21 @@ require_once('models/EntityFactory.php');
                 $user['surname'] = $user_update->surname;
                 $user['email'] = $user_update->email;
                 $user['login'] = $user_update->login;
-                $user['user']['password'] = $user_update->password;
+
                 if (!empty($errors)) {
                     $content = array();
                     $content['user'] = $user;
                     $content['errors'] = $errors;
                     return Users::view()->assign('user', $content);
                 } else {
-
                     $query = "UPDATE `u_users` SET `name`='$user_update->name',`surname`='$user_update->surname',`email`='$user_update->email',`login`='$user_update->login',`password`='$user_update->password' WHERE id=".$id;
 
                     $this->db->query($query);
                     $user_id = $this->db->lastInsertId();
+                }
+                if ($user_update->password) {
+                    $query = "UPDATE `u_users` SET `password`='$user_update->password' WHERE id=".$id;
+                    $this->db->query($query);
 
                 }
             }
@@ -170,6 +180,8 @@ require_once('models/EntityFactory.php');
                     $user['user']['email'] = $u['email'];
                     $user['user']['login'] = $u['login'];
                 }
+                $this->api($this->api_url, $this->content_type, $user['user']);
+
                 return Users::view()->assign('user', $user);
             }
         }
@@ -180,6 +192,10 @@ require_once('models/EntityFactory.php');
                 if (!empty($user)) {
                     $query = "DELETE FROM `u_users` WHERE id=".$id;
                     $this->db->query($query);
+                    $post_data = array();
+                    $post_data['delete_id'] = $id;
+                    $this->api($this->api_url, $this->content_type, $post_data);
+
                 }
             }
             header("Location: /users/read");

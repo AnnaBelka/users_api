@@ -4,7 +4,7 @@ require_once(dirname(dirname(__FILE__)).'/database/DataBase.php');
 require_once('View.php');
 
 abstract class EntityFactory {
-    abstract public function api($url, $content_type, $post_data = array());
+    abstract public function api($url, $content_type, $post_data);
 }
 
 class CreateFactory extends EntityFactory {
@@ -22,7 +22,7 @@ class CreateFactory extends EntityFactory {
         return new View();
     }
 
-    public function api($url, $content_type, $post_data = array()) {
+    public function api($url, $content_type, $data) {
         foreach ($this->db->query("SELECT `value` FROM `u_settings` WHERE `name`='api_url'") as $res) {
             $this->api_url = $res['value'];
 
@@ -33,6 +33,7 @@ class CreateFactory extends EntityFactory {
         $curl_url = $this->api_url.'/'.$url;
         if ($content_type == 'json') {
             $headers_content_type = 'application/json;charset=UTF-8';
+            $data_string = json_encode($data);
         } elseif ($content_type == 'xml') {
             $headers_content_type = 'application/xml;charset=UTF-8';
         }
@@ -49,7 +50,7 @@ class CreateFactory extends EntityFactory {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         curl_setopt($ch, CURLOPT_POST, 1); //передача данных методом POST
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data); //тут переменные которые будут переданы методом POST
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string); //тут переменные которые будут переданы методом POST
 
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
