@@ -11,7 +11,7 @@
             $uri = $this->getUri();
 
             if ($uri == 'api/users.php') {
-                require_once(dirname(dirname(__FILE__)).'/api/users.php');
+                $result = true;
             } else {
                 $segments = explode('/',$uri);
                 $file = ucfirst(trim($segments[0])).'.php';

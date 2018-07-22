@@ -72,7 +72,6 @@ require_once('models/EntityFactory.php');
                     if (!empty($user_id)) {
                         $user_query = $this->db->query('SELECT `id`, `name`, `surname`, `email`, `login` FROM u_users WHERE id='.$user_id);
                         foreach ($user_query as $u) {
-                            $user['user']['id'] = $u['id'];
                             $user['user']['name'] = $u['name'];
                             $user['user']['surname'] = $u['surname'];
                             $user['user']['email'] = $u['email'];

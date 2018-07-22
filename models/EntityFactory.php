@@ -30,7 +30,7 @@ class CreateFactory extends EntityFactory {
         foreach ($this->db->query("SELECT `value` FROM `u_settings` WHERE `name`='AccessToken'") as $res){
             $this->AccessToken = $res['value'];
         }
-        $curl_url = $this->api_url.'/'.$url;
+        $curl_url = $this->api_url.$url;
         if ($content_type == 'json') {
             $headers_content_type = 'application/json;charset=UTF-8';
             $data_string = json_encode($data);
@@ -53,7 +53,6 @@ class CreateFactory extends EntityFactory {
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string); //тут переменные которые будут переданы методом POST
 
         curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
         $response = curl_exec($ch);
         $error = curl_error($ch);
